@@ -12,12 +12,19 @@ import com.codepath.asynchttpclient.AsyncHttpClient
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import okhttp3.Headers
 import org.json.JSONException
-import kotlin.let
+import kotlinx.serialization.json.Json
 
 private const val TAG = "CampgroundFragment"
 private const val API_KEY = BuildConfig.API_KEY
 private const val CAMPGROUND_URL =
     "https://developer.nps.gov/api/v1/campgrounds?api_key=${API_KEY}"
+
+// Helper function for JSON parsing
+fun createJsonn() = Json {
+    isLenient = true
+    ignoreUnknownKeys = true
+    useAlternativeNames = false
+}
 
 /**
  * A simple [Fragment] subclass.
@@ -74,10 +81,10 @@ class CampgroundFragment : Fragment() {
                 Log.e(TAG, "Failed to fetch campgrounds: $statusCode")
             }
 
-            override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
+            override fun onSuccess(statusCode: Int, headers: Headers, json: JsonHttpResponseHandler.JSON) {
                 Log.i(TAG, "Successfully fetched campgrounds: $json")
                 try {
-                    val parsedJson = createJson().decodeFromString(
+                    val parsedJson = createJsonn().decodeFromString(
                         CampgroundResponse.serializer(),
                         json.jsonObject.toString()
                     )
